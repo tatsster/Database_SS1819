@@ -4,8 +4,7 @@ import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class OracleJDBCExample {
-
+public class Main {
     public static void main(String[] argv) {
         System.out.println("-------- Oracle JDBC Connection Testing ------");
 
@@ -20,7 +19,7 @@ public class OracleJDBCExample {
         
         Connection connection = null;
         try {
-            connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "system", "password");
+            connection = DriverManager.getConnection("jdbc:oracle:thin:@50anhoi.ddns.net:1521:orcl", "Manager", "123456789");
         } catch (SQLException e) {
             System.out.println("Connection Failed! Check output console");
             e.printStackTrace();
@@ -31,6 +30,12 @@ public class OracleJDBCExample {
             System.out.println("You made it, take control your database now!");
         } else {
             System.out.println("Failed to make connection!");
+        }
+
+        try {
+        connection.close();
+        } catch (SQLException e) {
+            System.out.println("Failed to logout");
         }
     }
 }
