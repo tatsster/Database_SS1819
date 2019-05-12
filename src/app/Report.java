@@ -23,7 +23,7 @@ public class Report {
 	
 	public String toString(String inputPID) throws SQLException {
 		try {
-			rs = qr.executeQuery("SELECT * FROM  ACCOUNT1.PATIENT, (SELECT * FROM ACCOUNT1.OUTPATIENT WHERE PID_OUT =" + inputPID + ") O WHERE PID = O.PID_OUT");
+			rs = qr.executeQuery("SELECT * FROM  PATIENT, (SELECT * FROM OUTPATIENT WHERE PID_OUT =" + inputPID + ") O WHERE PID = O.PID_OUT");
 		} catch (SQLException e) {
 			return "Wrong Patient ID !!!";
 		}
@@ -59,9 +59,9 @@ public class Report {
 	            return "NULL";
 			}
 			try {
-				rs = qr.executeQuery("SELECT EXID , EXDATE, EXDiAGNOSIS, MNAME, MEFFECTS, EXSECONDEXAMINATIONDATE, EXFEE, MPRICE FROM (SELECT * FROM  ACCOUNT1.EXAMINATION E, "
-								 + "(SELECT EID_DOC AS USES_EID_DOC, EXID AS USES_EXID, PID_OUT AS USES_PID_OUT, MNAME, MEFFECTS, MPRICE  FROM ACCOUNT1.USES_EXAM U, "
-								 + "ACCOUNT1.MEDICATION M WHERE U.MID = M.MID ) A WHERE E.EID_DOC = A.USES_EID_DOC AND E.PID_OUT = A.USES_PID_OUT AND E.EXID = A.USES_EXID) F "
+				rs = qr.executeQuery("SELECT EXID , EXDATE, EXDiAGNOSIS, MNAME, MEFFECTS, EXSECONDEXAMINATIONDATE, EXFEE, MPRICE FROM (SELECT * FROM  EXAMINATION E, "
+								 + "(SELECT EID_DOC AS USES_EID_DOC, EXID AS USES_EXID, PID_OUT AS USES_PID_OUT, MNAME, MEFFECTS, MPRICE  FROM USES_EXAM U, "
+								 + "MEDICATION M WHERE U.MID = M.MID ) A WHERE E.EID_DOC = A.USES_EID_DOC AND E.PID_OUT = A.USES_PID_OUT AND E.EXID = A.USES_EXID) F "
 								 + "WHERE F.PID_OUT = " + inputPID);
 			} catch (SQLException e) {
 				System.out.println("Query Failed! Check your connection or the valid of your query statement");
@@ -109,7 +109,7 @@ public class Report {
 		}
 		else {		
 			try {
-				rs = qr.executeQuery("SELECT * FROM  ACCOUNT1.PATIENT, (SELECT * FROM ACCOUNT1.INPATIENT WHERE PID_IN =" + inputPID + ") I WHERE PID = I.PID_IN");
+				rs = qr.executeQuery("SELECT * FROM  PATIENT, (SELECT * FROM INPATIENT WHERE PID_IN =" + inputPID + ") I WHERE PID = I.PID_IN");
 			} catch (SQLException e) {
 				System.out.println("Query Failed! Check your connection or the valid of your query statement");
 	            e.printStackTrace();
@@ -153,8 +153,8 @@ public class Report {
 				
 				try {
 					rs = qr.executeQuery("SELECT TRID , TRSTART, TREND, TRRESULT, PADMISSIONDATE, PDISCHARGEDATE, PDIAGNOSIS, PSICKROOM, MNAME, MEFFECTS, PFEE, MPRICE "
-							 + "FROM ACCOUNT1.INPATIENT, (SELECT * FROM  ACCOUNT1.TREATMENT T, (SELECT EID_DOC AS USES_EID_DOC, TRID AS USES_TRID, PID_IN AS USES_PID_IN, MNAME, MEFFECTS, "
-							 + "MPRICE  FROM ACCOUNT1.USES_TREAT U, ACCOUNT1.MEDICATION M WHERE U.MID = M.MID ) A WHERE T.EID_DOC = A.USES_EID_DOC AND "
+							 + "FROM INPATIENT, (SELECT * FROM  TREATMENT T, (SELECT EID_DOC AS USES_EID_DOC, TRID AS USES_TRID, PID_IN AS USES_PID_IN, MNAME, MEFFECTS, "
+							 + "MPRICE  FROM USES_TREAT U, MEDICATION M WHERE U.MID = M.MID ) A WHERE T.EID_DOC = A.USES_EID_DOC AND "
 							 + "T.PID_IN = A.USES_PID_IN AND T.TRID = A.USES_TRID) F WHERE F.PID_IN = " + inputPID);
 				} catch (SQLException e) {
 					System.out.println("Query Failed! Check your connection or the valid of your query statement");
