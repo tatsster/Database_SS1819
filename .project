@@ -3,12 +3,12 @@
   <name>Database</name>
   <comment/>
   <projects>
-    </projects>
+  </projects>
   <buildSpec>
     <buildCommand>
       <name>org.eclipse.jdt.core.javabuilder</name>
       <arguments>
-            </arguments>
+      </arguments>
     </buildCommand>
   </buildSpec>
   <natures>

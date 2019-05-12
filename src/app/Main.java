@@ -16,7 +16,7 @@ public class Main {
                 Runtime.getRuntime().exec("cls");
             else
                 Runtime.getRuntime().exec("clear");
-        } catch (final Exception e) {
+        } catch (Exception e) {
             // pass
         }
     }
@@ -44,33 +44,33 @@ public class Main {
         Console console = System.console();
         while (login_count < 3) {
             String pwd = new String(console.readPassword("Password: "));
+            // System.out.print("Password: ");
+            // String pwd = sc.next();
             try {
                 connection = DriverManager.getConnection("jdbc:oracle:thin:@50anhoi.ddns.net:1521:orcl", usr, pwd);
             } catch (SQLException e) {
                 System.out.println("Connection Failed!");
-                login_count++;
                 // e.printStackTrace();
                 // return;
             }
-            if (login_count == 3) {
-                sc.close();
-                return;
+            login_count++;
+            if (connection != null) {
+                System.out.println("You made it, take control your database now!");
+                break;
             }
         }
 
-        if (connection != null) {
-            System.out.println("You made it, take control your database now!");
-        } else {
+        if (connection == null) {
             System.out.println("Failed to make connection! Check again your Internet settings");
             sc.close();
+            System.exit(1);
             return;
         }
 
         // Query action
-        Add_Search AddSearch = new Add_Search(connection, sc;
+        Add_Search AddSearch = new Add_Search(connection, sc);
 
-        while (true)
-        {
+        while (true) {
             clearScreen();
             System.out.println("---------------- Query Options ----------------");
             System.out.println("1. Search patient information");
@@ -79,16 +79,36 @@ public class Main {
             System.out.println("4. Report full payment information of a Patient");
             System.out.println("5. Logout");
             System.out.println("-----------------------------------------------");
-            System.out.println("Action (1-5): ");
+            System.out.print("Action (1-5): ");
             int action = sc.nextInt();
-            if (action == 1)
-            {
+            if (action == 1) {
 
-            }
-            else if (action == 2)
-            {
+            } else if (action == 2) {
+                try {
+                    AddSearch.Add();
+                } catch (SQLException e) {
+                    // TODO: pass exception
+                }
+            } else if (action == 3) {
 
+            } else if (action == 4) {
+
+            } else if (action == 5) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    // TODO: pass exception
+                    System.out.println("Errors occur while exiting, try again later...");
+                }
+                sc.close();
+                return;
             }
+
+            try {
+                System.in.read();
+            } catch (Exception e) {
+            }
+
         }
     }
 }
