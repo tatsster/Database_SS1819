@@ -1,3 +1,5 @@
+// ! CHANGE PRECISION NUMBER TYPE IN ORACLE
+
 package app;
 
 import java.sql.DriverManager;
@@ -69,6 +71,7 @@ public class Main {
 
         // Query action
         Add_Search AddSearch = new Add_Search(connection, sc);
+        Details details = new Details(connection);
 
         while (true) {
             clearScreen();
@@ -87,17 +90,25 @@ public class Main {
                 try {
                     AddSearch.Add();
                 } catch (SQLException e) {
-                    // TODO: pass exception
+                    // pass
                 }
             } else if (action == 3) {
-
+                System.out.println("-----------------------------------------------");
+                System.out.print("Doctor ID: ");
+                String docID = sc.next();
+                try {
+                    details.getPatientList(docID);
+                } catch (SQLException e) {
+                    // Pass exception
+                }
+                System.out.flush();
             } else if (action == 4) {
 
             } else if (action == 5) {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    // TODO: pass exception
+                    // pass
                     System.out.println("Errors occur while exiting, try again later...");
                 }
                 sc.close();

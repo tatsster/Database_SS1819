@@ -11,8 +11,8 @@ public class Details {
     private Statement statement;
     private ResultSet docIDset;
     private ResultSet patientList;
-    private String docQuery = "SELECT EID_Doc FROM ACCOUNT1.DOCTOR WHERE EID_Doc = ";
-    private String patientQuery = "SELECT * FROM ACCOUNT1.PATIENT, ACCOUNT1.INPATIENT, ACCOUNT1.TREATMENT WHERE PATIENT.PID = INPATIENT.PID_In AND INPATIENT.PID_In = TREATMENT.PID_In AND TREATMENT.EID_Doc = ";
+    private String docQuery = "SELECT EID_Doc FROM DOCTOR WHERE EID_Doc = ";
+    private String patientQuery = "SELECT * FROM PATIENT, INPATIENT, TREATMENT WHERE PATIENT.PID = INPATIENT.PID_In AND INPATIENT.PID_In = TREATMENT.PID_In AND TREATMENT.EID_Doc = ";
 
     public Details(Connection conn) {
         this.conn = conn;
@@ -32,6 +32,8 @@ public class Details {
             System.out.println("Empty Result Relation: The given Doctor ID does not have any corresponding Patients.");
             return 0;
         } else {
+            // ! Funny lines - Coded by Hai
+            // ! Now i give up
             String line = "";
             for (int i = 0; i < 408; i++) {
                 line += "-";

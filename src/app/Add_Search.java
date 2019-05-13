@@ -1,12 +1,8 @@
-// SELECT pid, pfname, plname, pphone, eid_doc, trid, trstart, trend, trresult
-// FROM account1.patient
-// INNER JOIN account1.treatment ON patient.PID = TREATMENT.PID_IN
-// WHERE plname = 'Smith';
-
 package app;
 
 import java.sql.*;
 import java.util.*;
+import org.apache.commons.lang3.StringUtils;
 
 class Patient_Info {
     private String pid;
@@ -41,8 +37,11 @@ public class Add_Search {
     private Statement statement;
     private ResultSet check_exist;
 
-    private String exist = "SELECT decode(COUNT(PID), 0, 'False', 'True') FROM ACCOUNT1.PATIENT WHERE PID = ";
-    private String addQuery = "INSERT INTO ACCOUNT1.PATIENT VALUES (?, ?, ?, TO_DATE(?, 'dd/mm/yyyy'), ?, ?, ?)";
+    private String exist = "SELECT decode(COUNT(PID), 0, 'False', 'True') FROM PATIENT WHERE PID = ";
+    private String addQuery = "INSERT INTO PATIENT VALUES (?, ?, ?, TO_DATE(?, 'dd/mm/yyyy'), ?, ?, ?)";
+    private String isINPATIENT = "SELECT decode(COUNT(PID_IN), 0, 'False', 'True') FROM TREATMENT WHERE = ";
+    private String INPATIENT_info = "SELECT PID, PFNAME, PLNAME, PPHONE, TRSTART, TREND, TRRESULT FROM PATIENT  INNER JOIN TREATMENT ON PID = PID_IN WHERE PID = ";
+    private String OUTPATIENT_info = "SELECT PID, PFNAME, PLNAME, PPHONE, EXDATE, EXSECONDEXAMINATIONDATE, EXDIAGNOSIS FROM PATIENT INNER JOIN EXAMINATION ON PID = PID_OUT WHERE PID = ";
 
     public Add_Search(Connection connection, Scanner sc) {
         this.connection = connection;
@@ -54,10 +53,59 @@ public class Add_Search {
         }
     }
 
-    public void Search(String name) {
-        // Search by Name (Check in both LName and FName)
-        // Result: Name, Phone, Treatment info (Inpatient)
+    public void Search(String pid) {
+        // Search by pid
+        try {
+            ResultSet checkType = statement.executeQuery(isINPATIENT + pid);
+            if (checkType.next() && checkType.getString(1) == "True") {
+                // INPATIENT
+                ResultSet inpatient = statement.executeQuery(INPATIENT_info + pid);
+                String line = "";
+                for (int i = 0; i < 141; i++)
+                    line += '-';
 
+                System.out.println(line);
+                System.out.format("|%s|%s|%s|%s|%s|%s|%s|\n", StringUtils.center("PID", 11),
+                        StringUtils.center("First Name", 22), StringUtils.center("Last Name", 22),
+                        StringUtils.center("Phone number", 12), StringUtils.center("Start date", 11),
+                        StringUtils.center("End date", 11), StringUtils.center("Result", 52));
+                System.out.println(line);
+
+                while (inpatient.next()) {
+                    System.out.format("|%s|%s|%s|%s|%s|%s|%s|\n", inpatient.getString(1), inpatient.getString(2),
+                            inpatient.getString(3), inpatient.getString(4), inpatient.getString(5),
+                            inpatient.getString(6), inpatient.getString(7));
+                    System.out.println(line);
+                }
+            } else {
+                // OUTPATIENT
+                ResultSet outpatient = statement.executeQuery(OUTPATIENT_info + pid);
+                if (outpatient.next() == false) {
+                    System.out.println("Empty Result: The given Patient ID does not match to any Patients.");
+                    return;
+                }
+
+                String line = "";
+                for (int i = 0; i < 141; i++)
+                    line += '-';
+
+                System.out.println(line);
+                System.out.format("|%s|%s|%s|%s|%s|%s|%s|\n", StringUtils.center("PID", 11),
+                        StringUtils.center("First Name", 22), StringUtils.center("Last Name", 22),
+                        StringUtils.center("Phone number", 12), StringUtils.center("Exam date", 11),
+                        StringUtils.center("Visit date", 11), StringUtils.center("Diagnosis", 52));
+                System.out.println(line);
+
+                do {
+                    System.out.format("|%s|%s|%s|%s|%s|%s|%s|\n", outpatient.getString(1), outpatient.getString(2),
+                            outpatient.getString(3), outpatient.getString(4), outpatient.getString(5),
+                            outpatient.getString(6), outpatient.getString(7));
+                    System.out.println(line);
+                } while (outpatient.next());
+            }
+        } catch (SQLException e) {
+            // Pass exception
+        }
     }
 
     public void Add() throws SQLException {
@@ -88,6 +136,7 @@ public class Add_Search {
         String addr = sc.nextLine();
         System.out.println("---------------------------------------------------------------");
 
+        // Insert PATIENT TABLE
         PreparedStatement update = connection.prepareStatement(addQuery);
         update.setString(1, pid);
         update.setString(2, NamePart[0]);
@@ -102,6 +151,9 @@ public class Add_Search {
         else
             System.out.println("There are some error while insert...");
         update.close();
+
+        // ? MUST Insert into OUTPATIENT or INPATIENT
+        // TODO: Group discussion
         return;
     }
 }
