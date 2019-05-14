@@ -17,7 +17,7 @@ public class Report {
 			this.qr = connection.createStatement();
 		} catch (SQLException e) {
 			System.out.println("Statement Failed! Check your connection");
-	        e.printStackTrace();
+	        // e.printStackTrace();
 		}  
 	}
 	
@@ -55,7 +55,7 @@ public class Report {
 				while(rs.next());
 			} catch (SQLException e) {
 				System.out.println("Query Failed! Check your connection or the valid of your query statement");
-	            e.printStackTrace();
+	            // e.printStackTrace();
 	            return "NULL";
 			}
 			try {
@@ -65,7 +65,7 @@ public class Report {
 								 + "WHERE F.PID_OUT = " + inputPID);
 			} catch (SQLException e) {
 				System.out.println("Query Failed! Check your connection or the valid of your query statement");
-	            e.printStackTrace();
+	            // e.printStackTrace();
 	            return "NULL";
 			}
 			
@@ -103,7 +103,7 @@ public class Report {
 								+ "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++%n");
 			} catch (SQLException e) {
 				System.out.println("Query Failed! Check your connection or the valid of your query statement");
-	            e.printStackTrace();
+	            // e.printStackTrace();
 	            return "NULL";
 			}
 		}
@@ -112,7 +112,7 @@ public class Report {
 				rs = qr.executeQuery("SELECT * FROM  PATIENT, (SELECT * FROM INPATIENT WHERE PID_IN =" + inputPID + ") I WHERE PID = I.PID_IN");
 			} catch (SQLException e) {
 				System.out.println("Query Failed! Check your connection or the valid of your query statement");
-	            e.printStackTrace();
+	            // e.printStackTrace();
 	            return "NULL";
 			}
 			
@@ -147,7 +147,7 @@ public class Report {
 					while(rs.next());
 				} catch (SQLException e) {
 					System.out.println("Query Failed! Check your connection or the valid of your query statement");
-		            e.printStackTrace();
+		            // e.printStackTrace();
 		            return "NULL";
 				}
 				
@@ -158,7 +158,7 @@ public class Report {
 							 + "T.PID_IN = A.USES_PID_IN AND T.TRID = A.USES_TRID) F WHERE F.PID_IN = " + inputPID);
 				} catch (SQLException e) {
 					System.out.println("Query Failed! Check your connection or the valid of your query statement");
-		            e.printStackTrace();
+		            // e.printStackTrace();
 		            return "NULL";
 				}	
 				
@@ -204,7 +204,7 @@ public class Report {
 									+ "+++++++++++++++++++++++++++++++++++++++++++++++++++++%n");
 				} catch (SQLException e) {
 					System.out.println("Query Failed! Check your connection or the valid of your query statement");
-		            e.printStackTrace();
+		            // e.printStackTrace();
 		            return "NULL";
 				}
 			}

@@ -1,26 +1,28 @@
-// ! CHANGE PRECISION NUMBER TYPE IN ORACLE
-
 package app;
 
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
-import java.lang.Runtime;
+// import java.lang.Runtime;
 import java.io.Console;
 
 public class Main {
     final static String os = System.getProperty("os.name");
 
     public static void clearScreen() {
-        try {
-            if (os.contains("Windows"))
-                Runtime.getRuntime().exec("cls");
-            else
-                Runtime.getRuntime().exec("clear");
-        } catch (Exception e) {
-            // pass
-        }
+        // try {
+        // if (os.contains("Windows"))
+        // Runtime.getRuntime().exec("cls");
+        // else
+        // Runtime.getRuntime().exec("clear");
+        // } catch (Exception e) {
+        // // pass
+        // }
+
+        // TÀ ĐẠO STYLE
+        for (int i = 0; i < 50; i++)
+            System.out.println();
     }
 
     public static void main(String[] argv) {
@@ -72,6 +74,7 @@ public class Main {
         // Query action
         Add_Search AddSearch = new Add_Search(connection, sc);
         Details details = new Details(connection);
+        Report report = new Report(connection);
 
         while (true) {
             clearScreen();
@@ -85,7 +88,11 @@ public class Main {
             System.out.print("Action (1-5): ");
             int action = sc.nextInt();
             if (action == 1) {
-
+                System.out.println("-----------------------------------------------");
+                System.out.print("Patient ID: ");
+                String pid = sc.next();
+                System.out.flush();
+                AddSearch.Search(pid);
             } else if (action == 2) {
                 try {
                     AddSearch.Add();
@@ -96,6 +103,7 @@ public class Main {
                 System.out.println("-----------------------------------------------");
                 System.out.print("Doctor ID: ");
                 String docID = sc.next();
+                System.out.flush();
                 try {
                     details.getPatientList(docID);
                 } catch (SQLException e) {
@@ -103,7 +111,16 @@ public class Main {
                 }
                 System.out.flush();
             } else if (action == 4) {
-
+                System.out.println("-----------------------------------------------");
+                System.out.print("Patient ID: ");
+                String PID = sc.next();
+                System.out.flush();
+                try {
+                    report.toString(PID);
+                } catch (SQLException e) {
+                    // Pass exception
+                }
+                System.out.flush();
             } else if (action == 5) {
                 try {
                     connection.close();
@@ -115,11 +132,11 @@ public class Main {
                 return;
             }
 
+            // WAIT TO CONTINUE - PRESS ANY
             try {
                 System.in.read();
             } catch (Exception e) {
             }
-
         }
     }
 }

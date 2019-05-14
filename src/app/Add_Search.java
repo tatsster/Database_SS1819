@@ -1,6 +1,8 @@
 package app;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -43,6 +45,21 @@ public class Add_Search {
     private String INPATIENT_info = "SELECT PID, PFNAME, PLNAME, PPHONE, TRSTART, TREND, TRRESULT FROM PATIENT  INNER JOIN TREATMENT ON PID = PID_IN WHERE PID = ";
     private String OUTPATIENT_info = "SELECT PID, PFNAME, PLNAME, PPHONE, EXDATE, EXSECONDEXAMINATIONDATE, EXDIAGNOSIS FROM PATIENT INNER JOIN EXAMINATION ON PID = PID_OUT WHERE PID = ";
 
+    // Random ID
+    private String DOCTOR_rand = "SELECT * FROM (SELECT * FROM DOCTOR ORDER BY DBMS_RANDOM.VALUE) WHERE ROWNUM = 1";
+    private String NURSE_rand = "SELECT * FROM (SELECT * FROM NURSE ORDER BY DBMS_RANDOM.VALUE) WHERE ROWNUM = 1";
+    private String MID_rand = "SELECT MID FROM (SELECT * FROM MEDICATION ORDER BY DBMS_RANDOM.VALUE) WHERE ROWNUM = 1";
+
+    // New INpatient
+    private String addINPATIENT = "INSERT INTO INPATIENT (PID_IN, PADMISSIONDATE, PDISCHARGEDATE, PSICKROOM, PFEE, EID_DOC, EID_NUR) VALUES (?, TO_DATE(?, 'dd/mm/yyyy'), TO_DATE(?, 'dd/mm/yyyy'), ?, ?, ?, ?)";
+    private String addTREATMENT = "INSERT INTO TREATMENT (EID_DOC, PID_IN, TRID) VALUES (?, ?, ?)";
+    private String addUSES_TREAT = "INSERT INTO USES_TREAT VALUES (?, ?, ?, ?)";
+    // New OUTpatient
+    private String addOUTPATIENT = "INSERT INTO OUTPATIENT (PID_OUT, EID_DOC) VALUES (?, ?)";
+    private String addEXAMINATION = "INSERT INTO EXAMINATION (EID_DOC, PID_OUT, EXID, EXDATE, EXFEE) VALUES (?, ?, ?, TO_DATE(?, 'dd/mm/yyyy'), ?)";
+    private String addUSES_EXAM = "INSERT INTO USES_EXAM VALUES (?, ?, ?, ?)";
+
+    // Constructor
     public Add_Search(Connection connection, Scanner sc) {
         this.connection = connection;
         this.sc = sc;
@@ -108,6 +125,147 @@ public class Add_Search {
         }
     }
 
+    private void INPATIENT(String pid) throws SQLException {
+        // ! Inpatient -> INPATIENT, TREATMENT, USE_TREAT
+        // TODO: Get random DOC_ID, NURSE_ID, MID
+        ResultSet doctor = statement.executeQuery(DOCTOR_rand);
+        ResultSet nurse = statement.executeQuery(NURSE_rand);
+        ResultSet medication = statement.executeQuery(MID_rand);
+        doctor.next();
+        nurse.next();
+        medication.next();
+        String DOC_ID = doctor.getString(1);
+        String NURSE_ID = nurse.getString(1);
+        int MID = medication.getInt(1);
+
+        // Admision Date - Today
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/mm/yyyy");
+        LocalDate today = LocalDate.now();
+        String admissionDate = dtf.format(today);
+
+        // Discharge Date
+        LocalDate nextday = today.plusDays(30);
+        String dischargeDate = dtf.format(nextday);
+
+        System.out.println("------------------- Required Information -------------------");
+        System.out.print("Sick room: ");
+        String room = sc.next();
+        System.out.print("Fee: ");
+        int fee = sc.nextInt();
+        System.out.print("Treatment ID: ");
+        int TRID = sc.nextInt();
+        System.out.println("------------------------------------------------------------");
+
+        // add INPATIENT - update DIAGNOSIS later
+        PreparedStatement inpatient = connection.prepareStatement(addINPATIENT);
+        inpatient.setString(1, pid);
+        inpatient.setString(2, admissionDate);
+        inpatient.setString(3, dischargeDate);
+        inpatient.setString(4, room);
+        inpatient.setInt(5, fee);
+        inpatient.setString(6, DOC_ID);
+        inpatient.setString(7, NURSE_ID);
+        int check = inpatient.executeUpdate();
+        if (check == 1)
+            inpatient.close();
+        else {
+            System.out.print("ERROR while adding new Inpatient !!!");
+            return;
+        }
+
+        // add TREATMENT - update TRSTART, TREND, TRRESULT later
+        PreparedStatement treatment = connection.prepareStatement(addTREATMENT);
+        treatment.setString(1, DOC_ID);
+        treatment.setString(2, pid);
+        treatment.setInt(3, TRID);
+        check = treatment.executeUpdate();
+        if (check == 1)
+            treatment.close();
+        else {
+            System.out.println("ERROR while update Treatment information for Inpatient !!!");
+            return;
+        }
+
+        // add USES_TREAT
+        PreparedStatement uses_treat = connection.prepareStatement(addUSES_TREAT);
+        uses_treat.setString(1, DOC_ID);
+        uses_treat.setString(2, pid);
+        uses_treat.setInt(3, TRID);
+        uses_treat.setInt(4, MID);
+        check = uses_treat.executeUpdate();
+        if (check == 1)
+            uses_treat.close();
+        else {
+            System.out.println("ERROR while update Treatment Medication !!!");
+            return;
+        }
+    }
+
+    private void OUTPATIENT(String pid) throws SQLException {
+        // ! Outpatient -> OUTPATIENT, EXAMINATION, USE_EXAM
+        ResultSet doctor = statement.executeQuery(DOCTOR_rand);
+        ResultSet medication = statement.executeQuery(MID_rand);
+        doctor.next();
+        medication.next();
+        String DOC_ID = doctor.getString(1);
+        int MID = medication.getInt(1);
+
+        // Examinate Date - Today
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/mm/yyyy");
+        LocalDate today = LocalDate.now();
+        String EXDATE = dtf.format(today);
+
+        // Form
+        System.out.flush();
+        System.out.println("------------------- Required Information -------------------");
+        System.out.print("Examination ID: ");
+        int EXID = sc.nextInt();
+        System.out.print("Fee: ");
+        int fee = sc.nextInt();
+        System.out.println("------------------------------------------------------------");
+
+        // add OUTPATIENT
+        PreparedStatement outpatient = connection.prepareStatement(addOUTPATIENT);
+        outpatient.setString(1, pid);
+        outpatient.setString(2, DOC_ID);
+        int check = outpatient.executeUpdate();
+        if (check == 1)
+            outpatient.close();
+        else {
+            System.out.println("ERROR while adding new Outpatient !!!");
+            return;
+        }
+
+        // add EXAMINATION
+        PreparedStatement exam = connection.prepareStatement(addEXAMINATION);
+        exam.setString(1, DOC_ID);
+        exam.setString(2, pid);
+        exam.setInt(3, EXID);
+        exam.setString(4, EXDATE);
+        exam.setInt(5, fee);
+        check = exam.executeUpdate();
+        if (check == 1)
+            exam.close();
+        else {
+            System.out.println("ERROR while updating new Examination !!!");
+            return;
+        }
+
+        // add USES_EXAM
+        PreparedStatement uses_exam = connection.prepareStatement(addUSES_EXAM);
+        uses_exam.setString(1, DOC_ID);
+        uses_exam.setString(2, pid);
+        uses_exam.setInt(3, EXID);
+        uses_exam.setInt(4, MID);
+        check = uses_exam.executeUpdate();
+        if (check == 1)
+            uses_exam.close();
+        else {
+            System.out.println("ERROR while update Examination Medication !!!");
+            return;
+        }
+    }
+
     public void Add() throws SQLException {
         System.out.println("---------------------------------------------------------------");
         System.out.print("Patient ID:         ");
@@ -152,8 +310,25 @@ public class Add_Search {
             System.out.println("There are some error while insert...");
         update.close();
 
+        // Get ID from ALL DOCTOR AND NURSE
+
         // ? MUST Insert into OUTPATIENT or INPATIENT
         // TODO: Group discussion
+        System.out.println("---------------------------------------------------------------");
+        System.out.println("------------------------ Patient Type -------------------------");
+        System.out.println("-> 1. Inpatient  - Take Medical Care");
+        System.out.println("-> 2. Outpatient - Examinate Condition");
+        System.out.println("---------------------------------------------------------------");
+        System.out.print("Type: ");
+        int type = sc.nextInt();
+        System.out.flush();
+        System.out.println("---------------------------------------------------------------");
+
+        if (type == 1) {
+            INPATIENT(pid);
+        } else {
+            OUTPATIENT(pid);
+        }
         return;
     }
 }

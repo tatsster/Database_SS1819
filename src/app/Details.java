@@ -35,43 +35,43 @@ public class Details {
             // ! Funny lines - Coded by Hai
             // ! Now i give up
             String line = "";
-            for (int i = 0; i < 408; i++) {
+            for (int i = 0; i < 313; i++) {
                 line += "-";
             }
 
             System.out.println(line);
-            System.out.format("|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|\n", StringUtils.center("PID", 15),
+            System.out.format("|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|\n", StringUtils.center("PID", 11),
                     StringUtils.center("First Name", 15), StringUtils.center("Last Name", 15),
-                    StringUtils.center("Day of Birth", 20), StringUtils.center("Gender", 10),
-                    StringUtils.center("Phone no.", 15), StringUtils.center("Address", 60),
-                    StringUtils.center("Admission Date", 20), StringUtils.center("Discharge Date", 20),
-                    StringUtils.center("Diagnosis", 30), StringUtils.center("Sickroom", 15),
-                    StringUtils.center("Fee", 10), StringUtils.center("Caring Nurse ID", 20),
-                    StringUtils.center("Treatment ID", 15), StringUtils.center("Treatment Start Date", 25),
-                    StringUtils.center("Treatment End Date", 20), StringUtils.center("Result", 65));
+                    StringUtils.center("Day of Birth", 15), StringUtils.center("Gender", 5),
+                    StringUtils.center("Phone no.", 13), StringUtils.center("Address", 52),
+                    StringUtils.center("Admission Date", 15), StringUtils.center("Discharge Date", 15),
+                    StringUtils.center("Diagnosis", 30), StringUtils.center("Sickroom", 8),
+                    StringUtils.center("Fee", 8), StringUtils.center("Caring Nurse ID", 11),
+                    StringUtils.center("Treatment ID", 8), StringUtils.center("Treatment Start Date", 20),
+                    StringUtils.center("Treatment End Date", 20), StringUtils.center("Result", 52));
 
             System.out.println(line);
 
             patientList.previous();
             while (patientList.next()) {
                 System.out.format("|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|\n",
-                        StringUtils.center(patientList.getString(1), 15),
+                        StringUtils.center(patientList.getString(1), 11),
                         StringUtils.center(patientList.getString(2), 15),
                         StringUtils.center(patientList.getString(3), 15),
-                        StringUtils.center(patientList.getString(4).substring(0, 10), 20),
-                        StringUtils.center(patientList.getString(5), 10),
-                        StringUtils.center(patientList.getString(6), 15),
-                        StringUtils.center(patientList.getString(7), 60),
-                        StringUtils.center(patientList.getString(9).substring(0, 10), 20),
-                        StringUtils.center(patientList.getString(10).substring(0, 10), 20),
+                        StringUtils.center(patientList.getString(4).substring(0, 10), 15),
+                        StringUtils.center(patientList.getString(5), 5),
+                        StringUtils.center(patientList.getString(6), 13),
+                        StringUtils.center(patientList.getString(7), 52),
+                        StringUtils.center(patientList.getString(9).substring(0, 10), 15),
+                        StringUtils.center(patientList.getString(10).substring(0, 10), 15),
                         StringUtils.center(patientList.getString(11), 30),
-                        StringUtils.center(patientList.getString(12), 15),
-                        StringUtils.center(patientList.getString(13), 10),
-                        StringUtils.center(patientList.getString(15), 20),
-                        StringUtils.center(patientList.getString(18), 15),
-                        StringUtils.center(patientList.getString(19).substring(0, 10), 25),
+                        StringUtils.center(patientList.getString(12), 8),
+                        StringUtils.center(patientList.getString(13), 8),
+                        StringUtils.center(patientList.getString(15), 11),
+                        StringUtils.center(patientList.getString(18), 8),
+                        StringUtils.center(patientList.getString(19).substring(0, 10), 20),
                         StringUtils.center(patientList.getString(20).substring(0, 10), 20),
-                        StringUtils.center(patientList.getString(21), 65));
+                        StringUtils.center(patientList.getString(21), 52));
 
                 System.out.println(line);
             }
